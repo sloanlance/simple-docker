@@ -1,0 +1,35 @@
+version: '2'
+services:
+  db:
+    image: mysql:5.6
+    volumes:
+      - "~/Documents/Docker/mysql-data:/var/lib/mysql"
+      - "./scripts:/docker-entrypoint-initdb.d"
+    restart: always
+    ports:
+      - "3306:3306"
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: db_root_password
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: db_user_name
+      MYSQL_PASSWORD: db_user_password
+      TERM: "xterm"
+
+  webapp:
+    depends_on:
+      - db
+    image: leccap-beta
+    volumes:
+      - "~/Documents/projects/leccap-web/:/var/www/leccap-web/:ro"
+    links:
+      - db
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    environment:
+      LECCAP_DB_HOST: db:3306
+      LECCAP_DB_PASSWORD: "mediapassword"
+      TERM: "xterm"
+      
